@@ -1,8 +1,11 @@
 import app from "./app";
+import config from "./config/env.config";
+
+const port = config.port;
 
 const main = async () => {
-  app.listen(5000, () => {
-    console.log(`The server is running on 5000`);
+  app.listen(port, () => {
+    console.log(`The server is running on ${port}`);
   });
 };
 
