@@ -2,11 +2,10 @@ import type { Request, Response } from "express";
 import { authService } from "./auth.service";
 
 const signupUser = async (req: Request, res: Response) => {
-  console.log("hello");
 
   try {
     const result = await authService.signupUserIntoDB(req.body);
-    res.status(200).json({
+    res.status(201).json({
       message: "User created successfully",
       data: result.rows[0],
     });
