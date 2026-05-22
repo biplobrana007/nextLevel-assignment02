@@ -21,7 +21,7 @@ const loginUser = async (req: Request, res: Response) => {
 
   try {
     const result = await authService.loginUserFromDB(req.body);
-    res.status(201).json({
+    res.status(200).json({
       message: "User logged in successfully",
       data: result,
     });
