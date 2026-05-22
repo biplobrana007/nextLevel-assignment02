@@ -62,13 +62,13 @@ const getSingleIssue = async (req: Request, res: Response) => {
 const updateIssue = async (req: Request, res: Response) => {
   const { role, id: userId } = req.user as JwtPayload;
   const { id } = req.params;
-  
+
   try {
     const result = await issueService.updateIssueIntoDB(
       req.body,
       id as string,
       role,
-      userId 
+      userId
     );
     if (result.rows.length === 0) {
       res.status(404).json({
@@ -89,10 +89,34 @@ const updateIssue = async (req: Request, res: Response) => {
     });
   }
 };
+const deleteIssue = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const result = await issueService.deleteIssueFromDB(id as string);
+    if (result.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Issue Not found!",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Delete issue successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
 
 export const issueController = {
   createIssue,
   getAllIssue,
   getSingleIssue,
   updateIssue,
+  deleteIssue,
 };

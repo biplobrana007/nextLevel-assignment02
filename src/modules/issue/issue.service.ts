@@ -39,7 +39,7 @@ const updateIssueIntoDB = async (
   payload: IIssue,
   id: string,
   role: string,
-  userId : string
+  userId: string
 ) => {
   const { title, description, type } = payload;
 
@@ -51,9 +51,10 @@ const updateIssueIntoDB = async (
     [id]
   );
 
-
-  if(role === "contributor" && userId !== issue.rows[0].reporter_id){
-    throw new Error ("As a contributor you are allowed to update only your own issue")
+  if (role === "contributor" && userId !== issue.rows[0].reporter_id) {
+    throw new Error(
+      "As a contributor you are allowed to update only your own issue"
+    );
   }
 
   if (role === "contributor" && issue.rows[0].status !== "open") {
@@ -77,10 +78,21 @@ const updateIssueIntoDB = async (
 
   return result;
 };
+const deleteIssueFromDB = async (id: string) => {
+  const result = await pool.query(
+    `
+    DELETE FROM issues WHERE id=$1
+    `,
+    [id]
+  );
+
+  return result;
+};
 
 export const issueService = {
   createIssueIntoDB,
   getAllIssueFromDB,
   getSingleIssueFromDB,
   updateIssueIntoDB,
+  deleteIssueFromDB,
 };
