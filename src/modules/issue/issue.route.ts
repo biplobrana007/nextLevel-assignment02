@@ -5,6 +5,11 @@ import { userRole } from "../auth/user.roles";
 
 const router = Router();
 
-router.post("/", auth(userRole.contributor,userRole.maintainer), issueController.createIssue);
+router.post(
+  "/",
+  auth(userRole.contributor, userRole.maintainer),
+  issueController.createIssue
+);
+router.get("/", issueController.getAllIssue);
 
 export const issueRoute = router;
