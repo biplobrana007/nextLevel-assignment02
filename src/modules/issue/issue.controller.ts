@@ -1,19 +1,23 @@
 import type { Request, Response } from "express";
 import { issueService } from "./issue.service";
 import type { JwtPayload } from "jsonwebtoken";
+import sendResponse from "../../utility/sendResponse";
 
 const createIssue = async (req: Request, res: Response) => {
   const { id } = req.user as JwtPayload;
 
   try {
     const result = await issueService.createIssueIntoDB(req.body, id);
-    res.status(201).json({
+
+    sendResponse(res, {
+      statusCode: 201,
       success: true,
       message: "Issue created successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -23,13 +27,16 @@ const createIssue = async (req: Request, res: Response) => {
 const getAllIssue = async (req: Request, res: Response) => {
   try {
     const result = await issueService.getAllIssueFromDB();
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
-      message: "Issues retrieved successfully",
+      message: "Issue retrieved successfully",
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -39,20 +46,25 @@ const getAllIssue = async (req: Request, res: Response) => {
 const getSingleIssue = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const result = await issueService.getSingleIssueFromDB(id as string);
+    const result = await issueService.getSingleIssueFromDB(id as string, res);
     if (!result) {
-      res.status(404).json({
+      sendResponse(res, {
+        statusCode: 404,
         success: false,
         message: "Issue Not found!",
       });
+      return
     }
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Issue retrieved successfully",
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -68,21 +80,26 @@ const updateIssue = async (req: Request, res: Response) => {
       req.body,
       id as string,
       role,
-      userId
+      userId,
+      res
     );
     if (result.rows.length === 0) {
-      res.status(404).json({
+      sendResponse(res, {
+        statusCode: 404,
         success: false,
         message: "Issue Not found!",
       });
+      return
     }
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Update issue successfully",
       data: result.rows[0],
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
@@ -95,17 +112,23 @@ const deleteIssue = async (req: Request, res: Response) => {
   try {
     const result = await issueService.deleteIssueFromDB(id as string);
     if (result.rowCount === 0) {
-      res.status(404).json({
+      sendResponse(res, {
+        statusCode: 404,
         success: false,
         message: "Issue Not found!",
       });
+      return
     }
-    res.status(200).json({
+
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Delete issue successfully",
     });
+
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,

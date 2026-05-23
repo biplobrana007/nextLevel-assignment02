@@ -1,5 +1,7 @@
+import type { Response } from "express";
 import { pool } from "../../db";
 import type { IIssue } from "./issue.interface";
+import sendResponse from "../../utility/sendResponse";
 
 const createIssueIntoDB = async (payload: IIssue, reporterId: number) => {
   const { title, description, type, status } = payload;
@@ -53,7 +55,7 @@ const getAllIssueFromDB = async () => {
   return mapIssues;
 };
 
-const getSingleIssueFromDB = async (id: string) => {
+const getSingleIssueFromDB = async (id: string, res:Response) => {
   const issue = await pool.query(
     `
     SELECT * FROM issues WHERE id=$1
@@ -63,7 +65,11 @@ const getSingleIssueFromDB = async (id: string) => {
   );
 
   if (issue.rows.length === 0) {
-    throw new Error("Issue Not Found");
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Issue Not Found",
+    });
   }
 
   const {
@@ -108,10 +114,10 @@ const updateIssueIntoDB = async (
   payload: IIssue,
   id: string,
   role: string,
-  userId: string
+  userId: string,
+  res: Response
 ) => {
   const { title, description, type } = payload;
-  console.log(role);
 
   const issue = await pool.query(
     `
@@ -122,18 +128,27 @@ const updateIssueIntoDB = async (
   );
 
   if (issue.rows.length === 0) {
-    throw new Error("Issue Not Found");
+    sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Issue Not Found",
+    });
   }
   if (role === "contributor" && userId !== issue.rows[0].reporter_id) {
-    throw new Error(
-      "As a contributor you are allowed to update only your own issue"
-    );
+    sendResponse(res, {
+      statusCode: 403,
+      success: false,
+      message: "As a contributor you are allowed to update only your own issue",
+    });
   }
 
   if (role === "contributor" && issue.rows[0].status !== "open") {
-    throw new Error(
-      "You are a contributor and status is also not open so you can't update the issue"
-    );
+    sendResponse(res, {
+      statusCode: 403,
+      success: false,
+      message:
+        "You are a contributor and status is also not open so you can't update the issue",
+    });
   }
 
   const result = await pool.query(
