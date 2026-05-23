@@ -19,7 +19,7 @@ const issueObjectResponse = (issue: Issue, user: User) => {
     created_at: created_at,
     updated_at: updated_at,
   };
-  console.log(result);
+
   return result;
 };
 
