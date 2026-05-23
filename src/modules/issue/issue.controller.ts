@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { issueService } from "./issue.service";
 import type { JwtPayload } from "jsonwebtoken";
 import sendResponse from "../../utility/sendResponse";
+import issueSortBy from "../../utility/issuesSortBy";
 
 const createIssue = async (req: Request, res: Response) => {
   const { id } = req.user as JwtPayload;
@@ -26,7 +27,7 @@ const createIssue = async (req: Request, res: Response) => {
 };
 const getAllIssue = async (req: Request, res: Response) => {
   try {
-    const result = await issueService.getAllIssueFromDB();
+    const result = await issueSortBy(req);
 
     sendResponse(res, {
       statusCode: 200,
@@ -53,7 +54,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
         success: false,
         message: "Issue Not found!",
       });
-      return
+      return;
     }
 
     sendResponse(res, {
@@ -89,7 +90,7 @@ const updateIssue = async (req: Request, res: Response) => {
         success: false,
         message: "Issue Not found!",
       });
-      return
+      return;
     }
     sendResponse(res, {
       statusCode: 200,
@@ -117,7 +118,7 @@ const deleteIssue = async (req: Request, res: Response) => {
         success: false,
         message: "Issue Not found!",
       });
-      return
+      return;
     }
 
     sendResponse(res, {
@@ -125,7 +126,6 @@ const deleteIssue = async (req: Request, res: Response) => {
       success: true,
       message: "Delete issue successfully",
     });
-
   } catch (error: any) {
     sendResponse(res, {
       statusCode: 500,

@@ -2,6 +2,7 @@ import type { Response } from "express";
 import { pool } from "../../db";
 import type { IIssue } from "./issue.interface";
 import sendResponse from "../../utility/sendResponse";
+import issueObjectResponse from "../../utility/issueObjectResonse";
 
 const createIssueIntoDB = async (payload: IIssue, reporterId: number) => {
   const { title, description, type, status } = payload;
@@ -28,26 +29,10 @@ const getAllIssueFromDB = async () => {
     `);
 
   const mapIssues = issues.rows.map((issue) => {
-    const { id, title, description, type, status, created_at, updated_at } =
-      issue;
 
     const user = users.rows.find((user) => user.id === issue.reporter_id);
-    const { id: userId, name, role } = user;
 
-    const result = {
-      id: id,
-      title: title,
-      description: description,
-      type: type,
-      status: status,
-      reporter: {
-        id: userId,
-        name: name,
-        role: role,
-      },
-      created_at: created_at,
-      updated_at: updated_at,
-    };
+    const result = issueObjectResponse(issue, user);
 
     return result;
   });
@@ -55,7 +40,7 @@ const getAllIssueFromDB = async () => {
   return mapIssues;
 };
 
-const getSingleIssueFromDB = async (id: string, res:Response) => {
+const getSingleIssueFromDB = async (id: string, res: Response) => {
   const issue = await pool.query(
     `
     SELECT * FROM issues WHERE id=$1
@@ -72,16 +57,6 @@ const getSingleIssueFromDB = async (id: string, res:Response) => {
     });
   }
 
-  const {
-    id: issueId,
-    title,
-    description,
-    type,
-    status,
-    created_at,
-    updated_at,
-  } = issue.rows[0];
-
   const reporterId = issue.rows[0].reporter_id;
   const user = await pool.query(
     `
@@ -91,22 +66,7 @@ const getSingleIssueFromDB = async (id: string, res:Response) => {
     [reporterId]
   );
 
-  const { id: userId, name, role } = user.rows[0];
-
-  const result = {
-    id: issueId,
-    title: title,
-    description: description,
-    type: type,
-    status: status,
-    reporter: {
-      id: userId,
-      name: name,
-      role: role,
-    },
-    created_at: created_at,
-    updated_at: updated_at,
-  };
+  const result = issueObjectResponse(issue.rows[0],user.rows[0])
 
   return result;
 };
