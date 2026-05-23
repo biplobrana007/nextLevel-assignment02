@@ -42,6 +42,7 @@ const updateIssueIntoDB = async (
   userId: string
 ) => {
   const { title, description, type } = payload;
+  console.log(role);
 
   const issue = await pool.query(
     `
@@ -51,6 +52,9 @@ const updateIssueIntoDB = async (
     [id]
   );
 
+  if (issue.rows.length === 0) {
+    throw new Error("Issue Not Found");
+  }
   if (role === "contributor" && userId !== issue.rows[0].reporter_id) {
     throw new Error(
       "As a contributor you are allowed to update only your own issue"
@@ -59,7 +63,7 @@ const updateIssueIntoDB = async (
 
   if (role === "contributor" && issue.rows[0].status !== "open") {
     throw new Error(
-      "You are a contributor and status is also not open so you cant update the issue"
+      "You are a contributor and status is also not open so you can't update the issue"
     );
   }
 
