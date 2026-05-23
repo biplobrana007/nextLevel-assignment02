@@ -26,7 +26,7 @@ const getAllIssue = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Issues retrieved successfully",
-      data: result.rows,
+      data: result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -40,7 +40,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await issueService.getSingleIssueFromDB(id as string);
-    if (result.rows.length === 0) {
+    if (!result) {
       res.status(404).json({
         success: false,
         message: "Issue Not found!",
@@ -49,7 +49,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Issue retrieved successfully",
-      data: result.rows,
+      data: result,
     });
   } catch (error: any) {
     res.status(500).json({
