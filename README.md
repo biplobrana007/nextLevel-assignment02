@@ -47,7 +47,7 @@ Create Issue {Access: Authenticated users (contributor, maintainer)}
 - POST (https://assignment-02-jet.vercel.app/api/issues)
 
 Get All Issues (Optional sorting query)
-- GET (https://assignment-02-jet.vercel.app/api/issues?sort=newest)-- default
+- GET (https://assignment-02-jet.vercel.app/api/issues?sort=newest) -- default
 - GET (https://assignment-02-jet.vercel.app/api/issues?sort=oldest)
 - GET (https://assignment-02-jet.vercel.app/api/issues?type=bug)
 - GET (https://assignment-02-jet.vercel.app/api/issues?type=feature_request)
