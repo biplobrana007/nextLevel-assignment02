@@ -16,8 +16,11 @@ const signupUser = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: error.message,
-      error: error,
+      message:
+        error.message ===
+        'duplicate key value violates unique constraint "users_email_key"'
+          ? "This email already exits!"
+          : error.message,
     });
   }
 };
